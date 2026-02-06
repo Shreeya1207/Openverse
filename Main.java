@@ -1,23 +1,39 @@
-import java.util.*;
+import java.io.IOException;
+import java.util.Scanner;
 
-public class SearchEngine {
+public class Main {
+    public static void main(String[] args) {
 
-    private Map<String, Set<String>> index;
+        FileIndexer indexer = new FileIndexer();
 
-    public SearchEngine(Map<String, Set<String>> index) {
-        this.index = index;
-    }
-
-    public void search(String query) {
-        query = query.toLowerCase();
-
-        if (index.containsKey(query)) {
-            System.out.println("Word found in files:");
-            for (String file : index.get(query)) {
-                System.out.println("- " + file);
-            }
-        } else {
-            System.out.println("Word not found in any file.");
+        try {
+            indexer.indexFiles("data");
+        } catch (IOException e) {
+            System.out.println("Error reading files.");
+            return;
         }
+
+        SearchEngine engine = new SearchEngine(indexer.getIndex());
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n--- Mini Search Engine ---");
+            System.out.println("1. Search word");
+            System.out.println("2. Exit");
+            System.out.print("Enter choice: ");
+
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            if (choice == 1) {
+                System.out.print("Enter word to search: ");
+                String word = sc.nextLine();
+                engine.search(word);
+            } else {
+                System.out.println("Exiting search engine.");
+                break;
+            }
+        }
+        sc.close();
     }
 }
